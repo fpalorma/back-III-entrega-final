@@ -1,0 +1,234 @@
+paths:
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      description: Gets all users
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                    description: value of response
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+        "404":
+          description: Users not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  message:
+                    type: string
+                    example: "No users found"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+  /api/users/{uid}:
+    get:
+      tags:
+        - Users
+      summary: Get user by id
+      description: Get user by id
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          description: User ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  payload:
+                    $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  message:
+                    type: string
+                    example: "User not found"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+    put:
+      tags:
+        - Users
+      summary: Update user by id
+      description: Update user by id
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          description: User ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/updateUser"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  payload:
+                    $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+        "500":
+          description: Internal Server Error
+    delete:
+      tags:
+        - Users
+      summary: Delete user by ID
+      description: Deletes a user by their ID
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          description: User ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "User deleted successfully"
+        "404":
+          description: User not found
+        "500":
+          description: Internal Server Error
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: User ID (MongoDB ObjectId)
+        first_name:
+          type: string
+          description: User first name
+        last_name:
+          type: string
+          description: User last name
+        email:
+          type: string
+          description: User email
+        password:
+          type: string
+          description: (Hidden) User password
+          example: "********"
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+          description: User role
+        pets:
+          type: array
+          items:
+            type: string
+          description: List of user's pets (IDs or references)
+        __v:
+          type: integer
+          description: Version of user
+      example:
+        _id: abc123
+        first_name: John
+        last_name: Doe
+        email: johndoe@gmail.com
+        password: "********"
+        role: user
+        pets: []
+        __v: 0
+  requestBodies:
+    updateUser:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              first_name:
+                type: string
+                description: User first name
+              last_name:
+                type: string
+                description: User last name
+              email:
+                type: string
+                description: User email
+            required:
+              - first_name
+              - last_name
+              - email
+      example:
+        first_name: John2
+        last_name: Doe2
+        email: jon2@gmail.com
